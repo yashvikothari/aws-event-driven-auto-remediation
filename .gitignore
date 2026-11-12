@@ -1,0 +1,21 @@
+# Terraform local state and downloads (can contain sensitive values)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
+.terraform.tfstate.lock.info
+# The lock file .terraform.lock.hcl SHOULD be committed.
+
+# Generated local artifacts
+src/remediate.zip
+__pycache__/
+*.pyc
+.env
+.env.*
+.aws/
+credentials
+screenshots/

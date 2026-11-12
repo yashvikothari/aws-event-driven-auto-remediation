@@ -1,0 +1,14 @@
+{
+  "version": "0",
+  "id": "b4c1c2d3-1234-5678-9abc-def012345678",
+  "detail-type": "Config Rules Compliance Change",
+  "source": "aws.config",
+  "region": "us-east-1",
+  "detail": {
+    "resourceId": "sg-0123456789abcdef0",
+    "awsRegion": "us-east-1",
+    "configRuleName": "incoming-ssh-disabled-guard",
+    "resourceType": "AWS::EC2::SecurityGroup",
+    "newEvaluationResult": {"complianceType": "NON_COMPLIANT"}
+  }
+}
