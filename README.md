@@ -14,19 +14,24 @@ The Security Group is tagged and the remediation details are stored in DynamoDB.
 
 CloudTrail and AWS Config data are also delivered to S3, while Lambda execution logs are available in CloudWatch.
 
-AWS Services Used
-Service	Purpose
-AWS Config	Monitors Security Group compliance
-CloudTrail	Records AWS API activity
-EventBridge	Routes security events
-Lambda	Handles automatic remediation
-EC2 Security Groups	Resources being monitored
-DynamoDB	Stores remediation audit records
-S3	Stores security telemetry
-CloudWatch	Stores Lambda execution logs
-Terraform	Provisions AWS infrastructure
-Project Structure
-text
+
+## AWS Services Used
+
+| Service | Purpose |
+|---|---|
+| AWS Config | Monitors Security Group compliance |
+| CloudTrail | Records AWS API activity |
+| EventBridge | Routes security events |
+| Lambda | Handles automatic remediation |
+| EC2 Security Groups | Resources being monitored |
+| DynamoDB | Stores remediation audit records |
+| S3 | Stores security telemetry |
+| CloudWatch | Stores Lambda execution logs |
+| Terraform | Provisions AWS infrastructure |
+
+## Project Structure
+
+```text
 aws-event-driven-auto-remediation/
 │
 ├── main.tf
@@ -41,48 +46,28 @@ aws-event-driven-auto-remediation/
 └── scripts/
     ├── verify.sh
     └── cleanup.sh
-Deployment
-Prerequisites
-AWS account with the required permissions
-AWS CLI configured
-Terraform installed
-Git
+```
 
-Use a separate AWS lab account and select the us-east-1 region.
+## Deployment
 
-Deploy
-bash
+### Prerequisites
+
+- AWS account with the required permissions
+- AWS CLI configured
+- Terraform installed
+- Git installed
+
+### Deploy
+
+```bash
 terraform init
-terraform fmt -recursive
 terraform validate
 terraform plan
 terraform apply
+```
 
+### Cleanup
 
-Review the Terraform plan before applying it.
-
-If an existing customer-managed AWS Config recorder is already configured in the region, use:
-
-bash
-terraform plan -var="enable_config_recorder=false"
-terraform apply -var="enable_config_recorder=false"
-
-Cleanup
-
-After testing, remove the resources created by Terraform:
-
-bash
-terraform plan -destroy
+```bash
 terraform destroy
-
-
-If you deployed with enable_config_recorder=false, use the same variable during cleanup.
-
-Important Note
-
-This project is intended for learning and testing in a disposable AWS environment.
-
-Never attach the demo Security Group to production resources.
-Review IAM permissions before deployment.
-AWS services may incur charges.
-Do not commit AWS credentials or Terraform state files to GitHub.
+```
