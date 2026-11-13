@@ -15,15 +15,16 @@ The Security Group is tagged and the remediation details are stored in DynamoDB.
 CloudTrail and AWS Config data are also delivered to S3, while Lambda execution logs are available in CloudWatch.
 
 AWS Services Used
-AWS Config – Monitors security compliance.
-CloudTrail – Records AWS API activity.
-EventBridge – Routes security events.
-Lambda – Handles automatic remediation.
-EC2 Security Groups – Resources being monitored and remediated.
-DynamoDB – Stores remediation audit records.
-S3 – Stores security telemetry.
-CloudWatch – Stores Lambda execution logs.
-Terraform – Provisions AWS infrastructure.
+Service	Purpose
+AWS Config	Monitors Security Group compliance
+CloudTrail	Records AWS API activity
+EventBridge	Routes security events
+Lambda	Handles automatic remediation
+EC2 Security Groups	Resources being monitored
+DynamoDB	Stores remediation audit records
+S3	Stores security telemetry
+CloudWatch	Stores Lambda execution logs
+Terraform	Provisions AWS infrastructure
 Project Structure
 text
 aws-event-driven-auto-remediation/
@@ -40,7 +41,6 @@ aws-event-driven-auto-remediation/
 └── scripts/
     ├── verify.sh
     └── cleanup.sh
-
 Deployment
 Prerequisites
 AWS account with the required permissions
