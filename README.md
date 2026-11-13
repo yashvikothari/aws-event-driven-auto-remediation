@@ -1,42 +1,88 @@
-# AWS Event-Driven Security-Group Auto-Remediation (Lab)
+AWS Event-Driven Auto Remediation
 
-This companion starter project implements the Terraform + AWS Config + CloudTrail + EventBridge + Lambda + DynamoDB architecture described in the *CB Speed Run Project* reference PDF. It creates a new **unattached** demo security group, detects public ingress on SSH/RDP, selectively removes public CIDRs, and writes an audit receipt.
+A hands-on AWS security project that detects publicly exposed SSH/RDP access in Security Groups and automatically removes the risky rules.
 
-> **Warning:** Disposable learning environment only. Never attach the test group to production resources. This setup can incur AWS charges. AWS services were **not** deployed or integration-tested as part of creating this starter package; review all code and permissions in your own authorized lab account before running.
+The project uses AWS Config, CloudTrail, EventBridge, and Lambda to detect and respond to security changes. Every remediation is recorded in DynamoDB for auditing.
 
-## Quick start (Windows PowerShell)
+How It Works
+AWS Config monitors Security Group compliance.
+CloudTrail records changes made to Security Groups.
+EventBridge routes relevant events to Lambda.
+Lambda checks the affected Security Group.
+Public SSH/RDP access is removed while legitimate internal access is preserved.
+The Security Group is tagged and the remediation details are stored in DynamoDB.
 
-Follow `WINDOWS_BONUS_GUIDE.md` for installation, credentials, GitHub upload, AWS Config preflight, deployment, verification, screenshots, and cleanup.
+CloudTrail and AWS Config data are also delivered to S3, while Lambda execution logs are available in CloudWatch.
 
-```powershell
-$env:AWS_PROFILE = "cb-speed-run"
-aws sts get-caller-identity
-aws configservice describe-configuration-recorders --region us-east-1
+AWS Services Used
+AWS Config – Monitors security compliance.
+CloudTrail – Records AWS API activity.
+EventBridge – Routes security events.
+Lambda – Handles automatic remediation.
+EC2 Security Groups – Resources being monitored and remediated.
+DynamoDB – Stores remediation audit records.
+S3 – Stores security telemetry.
+CloudWatch – Stores Lambda execution logs.
+Terraform – Provisions AWS infrastructure.
+Project Structure
+text
+aws-event-driven-auto-remediation/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── README.md
+│
+├── src/
+│   ├── remediate.py
+│   └── broken_event_test.json
+│
+└── scripts/
+    ├── verify.sh
+    └── cleanup.sh
+
+Deployment
+Prerequisites
+AWS account with the required permissions
+AWS CLI configured
+Terraform installed
+Git
+
+Use a separate AWS lab account and select the us-east-1 region.
+
+Deploy
+bash
 terraform init
 terraform fmt -recursive
 terraform validate
-terraform plan -out demo.tfplan
-terraform apply demo.tfplan
-```
+terraform plan
+terraform apply
 
-If your account already has a customer-managed AWS Config recorder in us-east-1, use `terraform plan -var="enable_config_recorder=false" -out demo.tfplan` instead and use the same variable at destroy time.
 
-## Files
+Review the Terraform plan before applying it.
 
-- `main.tf`, `variables.tf`, `outputs.tf`: Terraform IaC
-- `src/remediate.py`: Python Lambda handler, limited to the auto-created demo SG
-- `src/broken_event_test.json`: example Config event structure
-- `scripts/verify.sh`: optional Git Bash test runner
-- `scripts/cleanup.sh`: optional Git Bash cleanup helper
-- `.gitignore`: guards local Terraform state and generated ZIP from Git commits
+If an existing customer-managed AWS Config recorder is already configured in the region, use:
 
-## Changes made compared with the PDF code
+bash
+terraform plan -var="enable_config_recorder=false"
+terraform apply -var="enable_config_recorder=false"
 
-- Kept the overall dual-trigger architecture, on-demand DynamoDB ledger, Config rule, CloudTrail, test SG, and Lambda remediation concept.
-- Added a safeguard that the Lambda only acts on the Terraform-created test security group.
-- Recognizes common nested AWS Config event resource-ID paths.
-- Uses a named audit table derived from the randomly suffixed prefix.
-- Avoids prescribing a hard-coded five-second response SLO; event delivery is asynchronous.
-- Scoped write actions to the demo security-group ARN in the Lambda role; `DescribeSecurityGroups` requires `*`.
+Cleanup
 
-**Notice:** `INCOMING_SSH_DISABLED` may flag the legitimate internal SSH rule as non-compliant, whereas the Lambda only removes public CIDRs. This is an intentional distinction between the PDF's managed-rule choice and the Lambda's narrower exposure policy.
+After testing, remove the resources created by Terraform:
+
+bash
+terraform plan -destroy
+terraform destroy
+
+
+If you deployed with enable_config_recorder=false, use the same variable during cleanup.
+
+Important Note
+
+This project is intended for learning and testing in a disposable AWS environment.
+
+Never attach the demo Security Group to production resources.
+Review IAM permissions before deployment.
+AWS services may incur charges.
+Do not commit AWS credentials or Terraform state files to GitHub.
